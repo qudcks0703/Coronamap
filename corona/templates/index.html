@@ -35,15 +35,19 @@
             success:function(result){
                 var length_num=Object.keys(result).length;
                 //result 첫번째 키들의 길이 1
-                for(var i=1;i<=length_num;i++) {
-                    var length_seq=Object.keys(result[i]).length;
+                list1=String(Object.keys(result)).split(",");
+                //list1=1,2,3,4,5,6,7,8,9 인덱스 8
+                //alert(Object.keys(list1[1]));
+                //alert(list1.length)
+                for(var i=0;i<list1.length;i++) {
+                    list2=String(Object.keys(result[list1[i]])).split(",");
                     //첫번째 키의 길이 7
-                    for(var j=1;j<=length_seq;j++){
-                        var start=result[i][j]['start'];
-                        var last=result[i][j]['last'];
-                        var place=result[i][j]['place'];
-                        var time=result[i][j]['time'];
-                        circle2=Circle_o(start,last,i,j,place,time);
+                    for(var j=0;j<list2.length;j++){
+                        var start=result[list1[i]][list2[j]]['start'];
+                        var last=result[list1[i]][list2[j]]['last'];
+                        var place=result[list1[i]][list2[j]]['place'];
+                        var time=result[list1[i]][list2[j]]['time'];
+                        circle2=Circle_o(start,last,list1[i],list2[j],place,time);
                     }
                 }
             }
@@ -60,20 +64,30 @@
                 fillOpacity: 0.3,//0~1
                 clickable:true,
                 center:new N.LatLng(a,b),
+                zIndex:2
             };
 
             circle= new N.Circle(Circle_option);
-
-            var contentString = [
+            if (num=="저세상"){
+                var contentString = [
+                    '<h4>'+num+'사람들</h4>',
+                    '<h6>'+seq+'번째 경로</h6>',
+                    '<small>'+place+'</small><br/>',
+                    '<small>['+time+']</small>',
+                ];
+            }else{
+                var contentString = [
                     '<h4>'+num+'번째 확진자</h4>',
                     '<h6>'+seq+'번째 경로</h6>',
-                '<small>'+place+'</small><br/>',
-                '<small>['+time+']</small>',
-            ];
-
+                    '<small>'+place+'</small><br/>',
+                    '<small>['+time+']</small>',
+                ];
+            }
 
             var infowindow = new N.InfoWindow({
-                content: contentString.join('')
+                content: contentString.join(''),
+                zIndex: 2
+
             });
 
             N.Event.addListener(circle, "click", function (e) {
