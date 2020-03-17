@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+    <title>map</title>
+
+</head>
+<body>
+<div>
+    <input id="to-seoul" type="button" value="서울로">
+    <input id="to-seoul1" type="button" value="관악구로">
+    <button id="aa">zzz</button>
+</div>
+<div id="map" style="width: 100%; height: 600px;position: absolute">
+</div>
+
+        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=m7nji7tukz"></script>
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script>
+    var mapoption={
+            center: new N.LatLng(37.480801, 126.951274),
+            zoom: 15,
+            mapTypeControl: true
+            }
+    var map = new N.Map('map', mapoption);
+
+    $(document).ready(function(){
+
+        $.ajax({
+            url:"{% url 'status' %}",
+            dataType:'json',
+            type:'get',
+            success:function(result){
+                var length_num=Object.keys(result).length;
+                //result 첫번째 키들의 길이 1
+                for(var i=1;i<=length_num;i++) {
+                    var length_seq=Object.keys(result[i]).length;
+                    //첫번째 키의 길이 7
+                    for(var j=1;j<=length_seq;j++){
+                        var start=result[i][j]['start'];
+                        var last=result[i][j]['last'];
+                        var place=result[i][j]['place'];
+                        var time=result[i][j]['time'];
+                        circle2=Circle_o(start,last,i,j,place,time);
+                    }
+                }
+            }
+        });
+        // 37.476848 126.961774
+        //0
+
+        function Circle_o(a,b,num,seq,place,time) {
+
+            var Circle_option={
+                map: map,
+                radius: 20,
+                fillColor: 'crimson',
+                fillOpacity: 0.3,//0~1
+                clickable:true,
+                center:new N.LatLng(a,b),
+            };
+
+            circle= new N.Circle(Circle_option);
+
+            var contentString = [
+                    '<h4>'+num+'번째 확진자</h4>',
+                    '<h6>'+seq+'번째 경로</h6>',
+                '<small>'+place+'</small><br/>',
+                '<small>['+time+']</small>',
+            ];
+
+
+            var infowindow = new N.InfoWindow({
+                content: contentString.join('')
+            });
+
+            N.Event.addListener(circle, "click", function (e) {
+                if (infowindow.getMap()) {
+                    infowindow.close();
+                } else {
+                    infowindow.open(map,new N.LatLng(a,b));
+                }
+            });
+
+            return circle
+        }
+    })
+    //circle2= Circle_o(37.480060, 126.951961);
+
+    /*corona1_1= Circle_o(37.477065, 126.961743,1,1);//대명부동산
+    corona1_2= Circle_o(37.477065, 126.961743,1,2);//대명부동산
+    corona1_3= Circle_o(37.476844, 126.961764,1,3);//
+    corona1_4= Circle_o(37.476760, 126.963145,1,4);//
+    corona1_5= Circle_o(37.477065, 126.961743,1,5);//대명부동산
+    corona1_5= Circle_o(37.477065, 126.961743,1,6);//대명부동산*/
+
+/*▢ 확진자 현황
+
+- 60세, 여성, 관악구 낙성대역길
+
+- 2/25(화) 양성 판정
+
+▢ 이동경로
+
+○ 2/19(수)
+
+- (11:40~12:30) 대명부동산(봉천로 580) 확진환자(372번,573번) 첫 접촉
+
+- (13:00~13:45) (낙성대역길 23)
+
+- (13:45~20:00) 대명부동산(봉천로 580)
+
+- (21:00~22:00) (남부순환로1926)
+○ 2/20(목)
+
+- (10:00~19:00) 대명부동산(봉천로 580)
+
+○ 2/21(금)
+
+- (10:00~19:00) 대명부동산(봉천로 580)
+
+○ 2/22(토)
+
+- (10:00~19:30) 대명부동산(봉천로 580)*/
+    // N.Event.addListener(circle1, "click", function(e) {
+    //     alert(circle1.getAreaSize());
+    // });
+
+
+// var ellipse = new naver.maps.Ellipse({
+//     map: map,
+//     bounds: new naver.maps.LatLngBounds(
+//         new naver.maps.LatLng(37.1793196, 127.6795594),
+//         new naver.maps.LatLng(37.5398662, 128.4312422)
+//     ),
+//     strokeColor: 'yellowgreen',
+//     strokeOpacity: 1,
+//     strokeWeight: 3,
+//     fillColor: 'yellowgreen',
+//     fillOpacity: 0.3
+// });
+var seoul = new naver.maps.LatLngBounds(
+                new naver.maps.LatLng(37.42829747263545, 126.76620435615891),
+                new naver.maps.LatLng(37.7010174173061, 127.18379493229875)),
+    seoul1 = new naver.maps.LatLng(37.480801, 126.951274);
+$("#to-seoul").on("click", function(e) {
+    e.preventDefault();
+
+    map.panToBounds(seoul);
+});
+$("#to-seoul1").on("click", function(e) {
+    e.preventDefault();
+
+    map.setZoom(16,true);
+    map.panTo(seoul1);
+});
+</script>
+</body>
+</html>
