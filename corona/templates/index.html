@@ -5,19 +5,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <title>map</title>
-
 </head>
 <body>
-<div>
-    <input id="to-seoul" type="button" value="서울로">
-    <input id="to-seoul1" type="button" value="관악구로">
-    <button id="aa">zzz</button>
-</div>
+<!--사용 기술:-->
+<!--python,django,javascript,javascript API-->
+<!--jquery,ajax,MTV Model-->
+<h1> 관악구 코로나 맵 </h1>
+<h4>*마커:왼쪽 마우스 <br/>*마커취소:원을 제외한 맵 클릭</h4>
 <div id="map" style="width: 100%; height: 600px;position: absolute">
 </div>
 
-        <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=m7nji7tukz"></script>
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=m7nji7tukz"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script>
     var mapoption={
             center: new N.LatLng(37.480801, 126.951274),
@@ -26,6 +25,34 @@
             }
     var map = new N.Map('map', mapoption);
 
+    function poliyline_a() {
+
+      var polyline = new naver.maps.Polyline({
+            map: map,
+            path: [],
+            clickable: true,
+            strokeColor: '#5347AA',
+            strokeOpacity: 0,
+            strokeWeight: 2
+        });
+      return polyline;
+    }
+
+    //폴리라인 설정
+    function polyline_config(circle,polyline){
+        N.Event.addListener(circle, 'click', function () {
+            polyline.setOptions({
+                strokeOpacity: 5
+            });
+        })
+
+        N.Event.addListener(map,'click',function(){
+            polyline.setOptions({
+                strokeOpacity: 0
+            });
+        })
+    }
+
     $(document).ready(function(){
 
         $.ajax({
@@ -33,27 +60,24 @@
             dataType:'json',
             type:'get',
             success:function(result){
-                var length_num=Object.keys(result).length;
-                //result 첫번째 키들의 길이 1
                 list1=String(Object.keys(result)).split(",");
-                //list1=1,2,3,4,5,6,7,8,9 인덱스 8
-                //alert(Object.keys(list1[1]));
-                //alert(list1.length)
                 for(var i=0;i<list1.length;i++) {
+                    var poliyline=poliyline_a();
+                    var arr=new N.KVOArray;
                     list2=String(Object.keys(result[list1[i]])).split(",");
-                    //첫번째 키의 길이 7
                     for(var j=0;j<list2.length;j++){
                         var start=result[list1[i]][list2[j]]['start'];
                         var last=result[list1[i]][list2[j]]['last'];
                         var place=result[list1[i]][list2[j]]['place'];
                         var time=result[list1[i]][list2[j]]['time'];
                         circle2=Circle_o(start,last,list1[i],list2[j],place,time);
+                        arr.push(new N.LatLng(start,last))
+                        polyline_config(circle2,poliyline);
                     }
+                    poliyline.setPath(arr);
                 }
             }
         });
-        // 37.476848 126.961774
-        //0
 
         function Circle_o(a,b,num,seq,place,time) {
 
@@ -68,7 +92,7 @@
             };
 
             circle= new N.Circle(Circle_option);
-            if (num=="저세상"){
+            if (num=="타지역"){
                 var contentString = [
                     '<h4>'+num+'사람들</h4>',
                     '<h6>'+seq+'번째 경로</h6>',
@@ -86,7 +110,6 @@
 
             var infowindow = new N.InfoWindow({
                 content: contentString.join(''),
-                zIndex: 2
 
             });
 
@@ -96,80 +119,19 @@
                 } else {
                     infowindow.open(map,new N.LatLng(a,b));
                 }
+
+                N.Event.addListener(map, "click", function (e) {
+                    infowindow.close();
+                });
+            });
+
+            N.Event.addListener(circle, "zIndex_changed", function (e) {
+                alert(num+"번째 확진자의"+seq+"번째 경로에서"+circle +"겹침");
             });
 
             return circle
         }
     })
-    //circle2= Circle_o(37.480060, 126.951961);
-
-    /*corona1_1= Circle_o(37.477065, 126.961743,1,1);//대명부동산
-    corona1_2= Circle_o(37.477065, 126.961743,1,2);//대명부동산
-    corona1_3= Circle_o(37.476844, 126.961764,1,3);//
-    corona1_4= Circle_o(37.476760, 126.963145,1,4);//
-    corona1_5= Circle_o(37.477065, 126.961743,1,5);//대명부동산
-    corona1_5= Circle_o(37.477065, 126.961743,1,6);//대명부동산*/
-
-/*▢ 확진자 현황
-
-- 60세, 여성, 관악구 낙성대역길
-
-- 2/25(화) 양성 판정
-
-▢ 이동경로
-
-○ 2/19(수)
-
-- (11:40~12:30) 대명부동산(봉천로 580) 확진환자(372번,573번) 첫 접촉
-
-- (13:00~13:45) (낙성대역길 23)
-
-- (13:45~20:00) 대명부동산(봉천로 580)
-
-- (21:00~22:00) (남부순환로1926)
-○ 2/20(목)
-
-- (10:00~19:00) 대명부동산(봉천로 580)
-
-○ 2/21(금)
-
-- (10:00~19:00) 대명부동산(봉천로 580)
-
-○ 2/22(토)
-
-- (10:00~19:30) 대명부동산(봉천로 580)*/
-    // N.Event.addListener(circle1, "click", function(e) {
-    //     alert(circle1.getAreaSize());
-    // });
-
-
-// var ellipse = new naver.maps.Ellipse({
-//     map: map,
-//     bounds: new naver.maps.LatLngBounds(
-//         new naver.maps.LatLng(37.1793196, 127.6795594),
-//         new naver.maps.LatLng(37.5398662, 128.4312422)
-//     ),
-//     strokeColor: 'yellowgreen',
-//     strokeOpacity: 1,
-//     strokeWeight: 3,
-//     fillColor: 'yellowgreen',
-//     fillOpacity: 0.3
-// });
-var seoul = new naver.maps.LatLngBounds(
-                new naver.maps.LatLng(37.42829747263545, 126.76620435615891),
-                new naver.maps.LatLng(37.7010174173061, 127.18379493229875)),
-    seoul1 = new naver.maps.LatLng(37.480801, 126.951274);
-$("#to-seoul").on("click", function(e) {
-    e.preventDefault();
-
-    map.panToBounds(seoul);
-});
-$("#to-seoul1").on("click", function(e) {
-    e.preventDefault();
-
-    map.setZoom(16,true);
-    map.panTo(seoul1);
-});
 </script>
 </body>
 </html>
