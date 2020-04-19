@@ -22,4 +22,4 @@
 -Json 파일 페이지로 만들어 Ajax로 데이터 값 저장
 -반복되는 마커 함수를 클래스 및 함수화 시키기
 
-Clone-> Eclipse -> Import Project localhost:8080/Team/index.jsp 접속시 페이지 확인 가능합니다.
+<h4>Clone-> Eclipse -> Import Project localhost:8080/Team/index.jsp 접속시 페이지 확인 가능합니다.</h4>
