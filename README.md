@@ -2,12 +2,12 @@
 
 <h4>Develop environment</h4>
 
--OS : Window 10
--Development Tool : Pycharm
--Framework : BootStrap,Django
--Language/Skills : Python / Ajax /Rest Api /Javascript /Jquery /HTML /CSS 
--DB : Json File
--Configuration management : Git
+-OS : Window 10<br/>
+-Development Tool : Pycharm<br/>
+-Framework : BootStrap,Django<br/>
+-Language/Skills : Python / Ajax /Rest Api /Javascript /Jquery /HTML /CSS <br/>
+-DB : Json File<br/>
+-Configuration management : Git<br/>
 
 <h4>팀 인원:</h4> 1명
 
