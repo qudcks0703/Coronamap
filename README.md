@@ -6,7 +6,6 @@
 - Development Tool : Pycharm
 - Framework : BootStrap,Django
 - Language/Skills : Python / Ajax /Rest Api /Javascript /Jquery /HTML /CSS
-- DB : Json File
 - Configuration management : Git
 
 <h4>팀 인원:</h4> 1명
